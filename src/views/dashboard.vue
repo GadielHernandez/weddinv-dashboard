@@ -6,40 +6,7 @@
                     <p class="text-h4">Invitados</p>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col>
-                    <v-card @click="createFilter('')">
-                        <v-card-text>
-                            <p class="my-1">Total de invitados</p>
-                            <p class="text-h5 my-3 font-weight-black primary-dashboard--text">{{ info.total }} </p>
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-                <v-col>
-                    <v-card @click="createFilter('Asistire')">
-                        <v-card-text>
-                            <p>Invitados confirmados</p>
-                            <p class="text-h5 my-3 font-weight-black green--text">{{ info.attend }} </p>
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-                <v-col>
-                    <v-card @click="createFilter('No asistire')">
-                        <v-card-text >
-                            <p>Invitados cancelados</p>
-                            <p class="text-h5 my-3 font-weight-black warning--text">{{ info.no_attend }} </p>
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-                <v-col>
-                    <v-card @click="createFilter('Sin responder')">
-                        <v-card-text >
-                            <p>Invitados sin responder</p>
-                            <p class="text-h5 my-3 font-weight-black">{{ info.total - info.attend - info.no_attend }} </p>
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-            </v-row>
+            <information @emitFilter="createFilter" />
             <v-card class="pt-4 mt-3 rounded-lg">
                 <v-row>
                     <v-col>
@@ -59,8 +26,8 @@
                             color="primary-dashboard"
                             class="mr-3"
                             dark
-                            @click="openDialog"
-                            >
+                            @click="openDialog()"
+                        >
                             <v-icon>mdi-plus</v-icon>
                         </v-btn>
                     </v-col>
@@ -120,7 +87,7 @@
                             </template>
 
                             <v-list>
-                                <v-list-item @click="editGuest(item.id)">
+                                <v-list-item @click="openDialog(item.id)">
                                     <v-icon small class="mr-2">
                                         mdi-pencil
                                     </v-icon>
@@ -153,6 +120,7 @@
                         <p class="ma-auto d-flex">
                             <v-switch
                                 v-model="item.out_time"
+                                color="primary-dashboard"
                                 class="ma-2"
                                 @change="block(item)"
                             ></v-switch>
@@ -160,50 +128,17 @@
                     </template>
                 </v-data-table>
             </v-card>
-            <v-dialog v-model="dialog.open" max-width="600px">
-                <v-card>
-                    <v-card-title>
-                        <span class="headline" v-if="dialog.id">Editar invitación</span>
-                        <span class="headline" v-else>Añadir invitación</span>
-                    </v-card-title>
-                    <v-card-text>
-                        <v-container>
-                            <p class="font-weight-black">Para:</p>
-                            <v-text-field
-                                v-model="dialog.name"
-                                color="primary-dashboard"
-                                outlined
-                                flat
-                                solo
-                                label="Nombre en la invitacion"
-                                persistent-hint
-                            ></v-text-field>
-                            <p class="font-weight-black">Numero de personas:</p>
-                            <v-select
-                                v-model="dialog.n_guests"
-                                color="primary-dashboard"
-                                outlined
-                                flat
-                                solo
-                                :items="[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ]"
-                                label="Numero de asistentes maximo"
-                                hide-details
-                            ></v-select>
-                        </v-container>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary-dashboard" text @click="closeDialog"
-                            >Cerrar</v-btn
-                        >
-                        <v-btn color="primary-dashboard" @click="saveChange" class="white--text">Guardar</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-        </div>
 
-        <div class="main-helper" v-else>
-            <div v-if="loading">
+            <formInvitation
+                :id="dialog.id"
+                :n_guests="dialog.n_guests"
+                :name_inv="dialog.name"
+                :open="dialog.open"
+                @close="closeDialog"
+            />
+        </div>
+        <div class="main-helper d-flex" v-else>
+            <div v-if="loading" class="ma-auto">
                 <v-progress-circular
                     :size="50"
                     :width="7"
@@ -220,8 +155,11 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import information from '../components/information.vue'
+import formInvitation from '../components/formInvitation.vue'
 export default {
     name: 'dashboard',
+    components: { information, formInvitation },
     computed: {
         ...mapState({
             ready: (state) => state.admin.wedding !== null,
@@ -251,27 +189,6 @@ export default {
                     item.link = `https://domain.com/${state.admin.wedding}/?inv=${guest.id}`
                     return item
                 }),
-
-            info: (state) => {
-                const info = {
-                    total: 0,
-                    attend: 0,
-                    no_attend: 0,
-                }
-                state.admin.list.forEach((guest) => {
-                    info.total += guest.guests
-                    if (guest.confirm) {
-                        if (guest.confirm.answer) {
-                            info.attend += guest.confirm.n_guests
-                            info.no_attend +=
-                                guest.guests - guest.confirm.n_guests
-                        } else {
-                            info.no_attend += guest.guests
-                        }
-                    }
-                })
-                return info
-            },
         }),
     },
     data() {
@@ -291,12 +208,16 @@ export default {
         ...mapActions({
             setWedding: 'admin/setWedding',
             updateList: 'admin/fetchList',
-            addGuest: 'admin/addGuest',
-            saveEdit: 'admin/editGuest',
             saveDelete: 'admin/deleteGuest',
             blockGuest: 'admin/blockGuest',
         }),
-        openDialog() {
+        openDialog(id) {
+            if (!id) return this.dialog.open = true
+            
+            const index = this.guests.findIndex((g) => g.id === id)
+            this.dialog.id = id
+            this.dialog.name = this.guests[index].name
+            this.dialog.n_guests = this.guests[index].guests
             this.dialog.open = true
         },
         closeDialog() {
@@ -308,31 +229,8 @@ export default {
         createFilter(text) {
             this.search = text
         },
-        async deleteGuest(id){
+        async deleteGuest(id) {
             await this.saveDelete({ id })
-        },
-        editGuest(id){
-            const index = this.guests.findIndex( g => g.id === id )
-            this.dialog.id = id
-            this.dialog.name = this.guests[index].name
-            this.dialog.n_guests = this.guests[index].guests
-            this.openDialog()
-        },
-        async saveChange() {
-            if(this.dialog.id === null)
-                await this.addGuest({
-                    name: this.dialog.name,
-                    guests: this.dialog.n_guests,
-                })
-            else
-                await this.saveEdit({
-                    id: this.dialog.id,
-                    update: {
-                        name: this.dialog.name,
-                        guests: this.dialog.n_guests,
-                    }
-                })
-            this.closeDialog()
         },
         async block(guest) {
             await this.blockGuest({
@@ -382,5 +280,8 @@ export default {
 .main {
     height: 100%;
     background-color: #f8f9fd;
+}
+.main-helper{
+    height: 100%;
 }
 </style>
