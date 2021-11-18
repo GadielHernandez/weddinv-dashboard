@@ -186,7 +186,7 @@ export default {
                             ? guest.confirm.phone
                             : ''
                     }
-                    item.link = `https://domain.com/${state.admin.wedding}/?inv=${guest.id}`
+                    item.link = `https://invitations-wedding.web.app/${state.admin.wedding}/?inv=${guest.id}`
                     return item
                 }),
         }),
