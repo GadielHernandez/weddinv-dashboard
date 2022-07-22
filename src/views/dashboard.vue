@@ -1,11 +1,13 @@
 <template>
     <div class="main">
         <div v-if="!loading && ready" class="pa-3 pa-md-6">
-            <v-row>
-                <v-col>
-                    <p class="text-h4">Invitados</p>
-                </v-col>
-            </v-row>
+            <Navbar :height="'100px'" class="mb-6">
+                <template v-slot:title>
+                    <div>
+                        <h4 class="title text-h4 my-0 font-weight-bold">Invitados</h4>
+                    </div>
+                </template>
+            </Navbar>
 
             <information class="mb-6"/>
 
@@ -50,7 +52,7 @@
                 <v-divider></v-divider>
                 <!-- eslint-disable -->
                 <v-data-table
-                    widt
+                    v-if="guests && guests.length > 0"
                     :headers="[
                         { text: '', value: 'name' },
                         { text: 'Invitados', value: 'guests', align: 'center', sortable: false },
@@ -65,10 +67,10 @@
                         <div>
                             <v-list-item>
                                 <v-list-item-avatar color="primary" class="d-none d-sm-flex">
-                                    <v-icon dark>mdi-account</v-icon>
+                                    <v-icon dark>mdi-card-bulleted-outline</v-icon>
                                 </v-list-item-avatar>
                                 <v-list-item-content>
-                                    <v-list-item-title>
+                                    <v-list-item-title class="font-weight-medium">
                                         {{ item.name }}
                                     </v-list-item-title>
                                     <v-list-item-subtitle style="font-size: 12px">
@@ -96,7 +98,7 @@
                         <div v-else>
                             <v-chip small outlined >
                                 {{ item.guests }} 
-                                <v-icon right small>mdi-help-rhombus-outline</v-icon>
+                                <v-icon right small>mdi-account-outline</v-icon>
                             </v-chip>
                         </div>
                     </template>
@@ -201,6 +203,14 @@
                     </template>
                 </v-data-table>
                 <!-- eslint-enable -->
+                <v-card-text v-else class="no-invitations text-center d-flex">
+                    <div class="ma-auto">
+                        <v-icon large>
+                            mdi-card-bulleted-settings-outline
+                        </v-icon>
+                        <p>Sin Invitaciones Creadas</p>
+                    </div>
+                </v-card-text>
             </v-card>
 
             <formInvitation
@@ -230,10 +240,11 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import formInvitation from '../components/formGuest.vue'
-import information from '../components/informationGuests.vue';
+import information from '../components/informationGuests.vue'
+import Navbar from '../components/navigation/navbar.vue'
 export default {
     name: 'dashboard',
-    components: { formInvitation, information },
+    components: { formInvitation, information, Navbar },
     computed: {
         ...mapState({
             ready: (state) => state.admin.wedding !== null,
@@ -358,12 +369,15 @@ export default {
 }
 </script>
 
-<style>
+<style scope>
 .main {
     height: 100%;
     background-color: #f8f9fd;
 }
 .main-helper{
     height: 100%;
+}
+.no-invitations{
+    min-height: 50vh;
 }
 </style>
