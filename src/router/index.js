@@ -1,14 +1,19 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Dashboard from '../views/dashboard.vue'
+import Invitations from '../views/Invitations.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
     {
         path: '/:wedding?',
-        name: 'Dashboard',
-        component: Dashboard,
+        name: 'Home',
+        component: Invitations,
+    },
+    {
+        path: '/invitations/:wedding?',
+        name: 'Invitations',
+        component: Invitations,
     }
 ]
 

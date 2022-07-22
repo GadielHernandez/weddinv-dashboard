@@ -18,7 +18,8 @@
                 <v-btn v-bind="attrs" v-on="on" 
                     fab 
                     small
-                    outlined
+                    color="primary"
+                    depressed
                 >
                     <v-icon>
                         mdi-account-outline
@@ -29,7 +30,7 @@
             <v-card width="300">
                 <v-card-text>
                     <v-list-item>
-                        <v-list-item-avatar color="secondary">
+                        <v-list-item-avatar color="primary">
                             <v-icon dark>
                                 mdi-account
                             </v-icon>

@@ -1,16 +1,23 @@
 <template>
     <v-app class="main">
-        <router-view />
+        <drawer />
+
+        <v-main>
+            <router-view />
+        </v-main>
+        
     </v-app>
 </template>
 
-<style>
-/* body, p, .v-application [class*='text-'], .v-application {
-    font-family: 'Quicksand', sans-serif !important;
+<script>
+import drawer from './components/navigation/drawer.vue'
+export default {
+    name: 'App',
+    components: { drawer }
 }
-.title, .v-application .title, .title [class*='text-'] {
-    font-family: 'Quicksand', sans-serif !important;
-} */
+</script>
+
+<style>
 .h-100 {
     height: 100%;
 }

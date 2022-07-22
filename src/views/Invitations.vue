@@ -297,6 +297,7 @@ export default {
             updateList: 'admin/fetchList',
             saveDelete: 'admin/deleteGuest',
             blockGuest: 'admin/blockGuest',
+            setView: 'view/setView'
         }),
         openDialog(id) {
             if (!id) return this.dialog.open = true
@@ -361,6 +362,8 @@ export default {
 
             await this.updateList()
             this.loading = false
+
+            this.setView('Invitations')
         } catch (error) {
             console.log(error)
             this.loading = false
