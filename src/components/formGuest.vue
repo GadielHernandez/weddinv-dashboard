@@ -6,12 +6,13 @@
                         <span class="headline" v-if="id">Editar invitación</span>
                         <span class="headline" v-else>Añadir invitación</span>
                     </v-card-title>
+                    <v-divider></v-divider>
                     <v-card-text>
                         <v-container>
                             <p class="font-weight-black">Para:</p>
                             <v-text-field
                                 v-model="name_local"
-                                color="primary-dashboard"
+                                color="primary"
                                 outlined
                                 flat
                                 solo
@@ -21,7 +22,7 @@
                             <p class="font-weight-black">Numero de personas:</p>
                             <v-select
                                 v-model="n_guests_local"
-                                color="primary-dashboard"
+                                color="primary"
                                 outlined
                                 flat
                                 solo
@@ -31,12 +32,13 @@
                             ></v-select>
                         </v-container>
                     </v-card-text>
+                    <v-divider></v-divider>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="primary-dashboard" text @click="closeDialog"
+                        <v-btn color="primary" text @click="closeDialog"
                             >Cerrar</v-btn
                         >
-                        <v-btn color="primary-dashboard" @click="saveChange" class="white--text">Guardar</v-btn>
+                        <v-btn color="primary" @click="saveChange">Guardar</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
