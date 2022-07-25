@@ -10,7 +10,7 @@ const getters = {}
 const actions = {
     login({ state, dispatch }, credentials) {
         return new Promise((resolve, reject) => {
-            if (state.logged) return resolve({ error: 'Ya esta logueado' })
+            if (state.logged) return reject({ error: 'Ya esta logueado' })
             auth.signInWithEmailAndPassword(
                 credentials.email,
                 credentials.password
@@ -21,7 +21,10 @@ const actions = {
                 return resolve(user)
             })
             .catch( error => {
-                console.log(error)
+                if(error.code === 'auth/user-not-found')
+                    return reject({ error: 'El correo no esta registrado' })
+                if(error.code === 'auth/wrong-password')
+                    return reject({ error: 'La contraseña es invalida' })    
                 return reject({ error: 'Revisa los datos' })
             })
         })
@@ -31,16 +34,15 @@ const actions = {
         commit('UPDATE_LOGGED_STATUS', payload.logged)
         return
     },
-    logout({ state }) {
+    logout({ state, dispatch }) {
         return new Promise( (resolve, reject) => {
-            if (!state.logged) return resolve({ message: 'No has hecho login' })
-
-            try {
-                // await auth.signOut()
-                return resolve({ message: 'Sesión terminada' })
-            } catch (error) {
-                return reject({ message: 'Error al cerrar sesión' })
-            }
+            if (!state.logged) return reject({ error: 'No has hecho login' })
+            auth.signOut()
+            .then( () => {
+                dispatch('setAuthData', { user: null, logged: false })
+                return resolve({ message: 'Sesión terminada' }) 
+            })
+            .catch( () => reject({ error: 'Error al cerrar sesión' }) )
         })
     },
 }

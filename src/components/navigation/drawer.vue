@@ -53,7 +53,7 @@ export default {
     },
     data() {
         return {
-            mini: false,
+            mini: true,
             selected: null,
             menu_items: [{
                 text: 'Inicio',

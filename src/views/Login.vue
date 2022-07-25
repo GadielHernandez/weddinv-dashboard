@@ -46,6 +46,9 @@
                 </v-card-actions>
             </v-card-text>
         </v-card>
+        <v-snackbar v-model="error.show">
+            {{ error.message }}
+        </v-snackbar>
     </div>
 </template>
 
@@ -58,6 +61,10 @@ export default {
             form: {
                 email: '',
                 password: ''
+            },
+            error: {
+                show: false,
+                message: ''
             },
             loading: false
         }
@@ -77,7 +84,8 @@ export default {
                 this.loading = false
                 this.gotTo('Invitations')
             } catch (error) {
-                console.log(error)
+                this.error.show = true
+                this.error.message = error.error
                 this.loading = false
             }
         }

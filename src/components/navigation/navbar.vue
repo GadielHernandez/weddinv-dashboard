@@ -36,14 +36,14 @@
                             </v-icon>
                         </v-list-item-avatar>
                         <v-list-item-content>
-                            <v-list-item-title>dsdsdsdsd</v-list-item-title>
-                            <v-list-item-subtitle>ss</v-list-item-subtitle>
+                            <v-list-item-title>{{ email }}</v-list-item-title>
+                            <v-list-item-subtitle>{{ wedding }}</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-list dense nav>
-                    <v-list-item @click="logout">
+                    <v-list-item @click="tryLogout">
                         <v-list-item-content>
                             <v-list-item-title>Cerrar sesión</v-list-item-title>
                         </v-list-item-content>
@@ -58,10 +58,26 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 export default {
     name: 'navbar',
     props: ['height'],
-    methods: {},
+    computed: {
+        ...mapState({
+            email: state => state.auth.user && state.auth.user.email,
+            wedding: state => state.admin.configurations.uid
+        })
+    },
+    methods: {
+        ...mapActions({
+            logout: 'auth/logout',
+            goTo: 'view/goToView'
+        }),
+        async tryLogout(){
+            await this.logout()
+            this.goTo('Login')
+        }
+    },
 }
 </script>
 
