@@ -1,4 +1,4 @@
-import { db } from '../../plugins/firebase'
+import { db, auth } from '../../plugins/firebase'
 import { nanoid } from 'nanoid'
 const state = {
     wedding: null,
@@ -9,9 +9,9 @@ const state = {
 const getters = {}
 
 const actions = {
-    setWedding({ commit }, id){
+    setWedding({ commit }){
         return new Promise((resolve, reject) => {
-            db.doc(`configurations/${id}`).get()
+            db.doc(`configurations/${auth.currentUser.uid}`).get()
             .then( doc => {
                 if(!doc.exists) return resolve(null)
                 const wedding = { id: doc.id, ...doc.data() }

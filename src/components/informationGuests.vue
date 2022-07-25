@@ -18,7 +18,7 @@
                         <p class="mt-4 mb-0 font-weight-black">Confirmados</p>
                         <p class="text-h4 my-2 font-weight-black d-flex">
                             {{ info.attend }} 
-                            <v-chip class="text-caption my-auto ml-4 py-2" color="secondary" x-small> 
+                            <v-chip v-if="info.total !== 0" class="text-caption my-auto ml-4 py-2" color="secondary" x-small> 
                                 {{ parseInt(info.attend / info.total  * 100) }} %
                             </v-chip>
                         </p>
@@ -32,7 +32,7 @@
                         <p class="mt-4 mb-0 font-weight-black">Cancelados</p>
                         <p class="text-h4 my-2 font-weight-black d-flex">
                             {{ info.no_attend }}
-                            <v-chip class="text-caption my-auto ml-4 py-2" color="secondary" x-small> 
+                            <v-chip v-if="info.total !== 0" class="text-caption my-auto ml-4 py-2" color="secondary" x-small> 
                                 {{ parseInt(info.no_attend / info.total  * 100) }} %
                             </v-chip>
                         </p>
@@ -46,7 +46,7 @@
                         <p class="mt-4 mb-0 font-weight-black">Pendientes</p>
                         <p class="text-h4 my-2 font-weight-black d-flex">
                             {{ info.total - info.attend - info.no_attend }}
-                            <v-chip class="text-caption my-auto ml-4 py-2" color="secondary" x-small> 
+                            <v-chip v-if="info.total !== 0" class="text-caption my-auto ml-4 py-2" color="secondary" x-small> 
                                 {{ parseInt((info.total - info.attend - info.no_attend) / info.total  * 100) }} %
                             </v-chip>
                         </p>

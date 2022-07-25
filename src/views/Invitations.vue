@@ -272,7 +272,7 @@ export default {
                             ? guest.confirm.phone
                             : ''
                     }
-                    item.link = `https://invitations-wedding.web.app/${state.admin.wedding}/${guest.id}`
+                    item.link = `https://invitations-wedding.web.app/${state.admin.configurations.uid}/${guest.id}`
                     return item
                 }),
         }),
@@ -353,21 +353,9 @@ export default {
         },
     },
     async mounted() {
-        try {
-            const { wedding } = this.$route.params
-            if (!wedding) return (this.loading = false)
-
-            const w = await this.setWedding(wedding)
-            if (!w) return (this.loading = false)
-
-            await this.updateList()
-            this.loading = false
-
-            this.setView('Invitations')
-        } catch (error) {
-            console.log(error)
-            this.loading = false
-        }
+        await this.updateList()
+        this.loading = false
+        this.setView('Invitations')
     },
 }
 </script>
