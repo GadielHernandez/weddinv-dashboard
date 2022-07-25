@@ -29,7 +29,18 @@
                                 :items="[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ]"
                                 label="Numero de asistentes maximo"
                                 hide-details
+                                class="mb-6"
                             ></v-select>
+                            <p class="font-weight-black">Telefono:</p>
+                            <v-text-field
+                                v-model="phone_local"
+                                color="primary"
+                                outlined
+                                flat
+                                solo
+                                label="Telefono celular"
+                                persistent-hint
+                            ></v-text-field>
                         </v-container>
                     </v-card-text>
                     <v-divider></v-divider>
@@ -49,11 +60,12 @@
 import { mapActions } from 'vuex'
 export default {
     name: 'formInvitation',
-    props: ['id', 'name_inv', 'n_guests', 'open'],
+    props: ['id', 'name_inv', 'n_guests', 'phone', 'open'],
     data() {
         return {
             name_local: '',
-            n_guests_local: null
+            n_guests_local: null,
+            phone_local: ''
         }
     },
     methods: {
@@ -63,7 +75,8 @@ export default {
         }),
         closeDialog() {
             this.name_local = ''
-            this.n_guests_local = null
+            this.n_guests_local = null,
+            this.phone_local = ''
             this.$emit('close')
         },
         async saveChange() {
@@ -71,6 +84,7 @@ export default {
                 await this.addGuest({
                     name: this.name_local,
                     guests: this.n_guests_local,
+                    phone: this.phone_local
                 })
             else
                 await this.saveEdit({
@@ -78,6 +92,7 @@ export default {
                     update: {
                         name: this.name_local,
                         guests: this.n_guests_local,
+                        phone: this.phone_local
                     }
                 })
             this.closeDialog()
@@ -89,6 +104,9 @@ export default {
         },
         n_guests(new_value){
             this.n_guests_local = new_value
+        },
+        phone(new_value){
+            this.phone_local = new_value
         }
     },
 }

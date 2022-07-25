@@ -147,6 +147,7 @@
                             Link <v-icon small class="ml-1">mdi-content-copy</v-icon>
                         </v-btn>
                         <v-btn 
+                            :disabled="!item.phone"
                             @click="sendWhatsapp(item.link, item.phone)" 
                             color="secondary"
                             small 
@@ -217,6 +218,7 @@
                 :id="dialog.id"
                 :n_guests="dialog.n_guests"
                 :name_inv="dialog.name"
+                :phone="dialog.phone"
                 :open="dialog.open"
                 @close="closeDialog"
             />
@@ -257,7 +259,7 @@ export default {
                         status: 'Sin responder',
                         confirm: guest.confirm,
                         n_guests: 0,
-                        phone: '',
+                        phone: guest.phone,
                         link: '',
                         out_time: guest.out_time ? true : false,
                     }
@@ -268,9 +270,6 @@ export default {
                         item.n_guests = guest.confirm.n_guests
                             ? guest.confirm.n_guests
                             : 0
-                        item.phone = guest.confirm.phone
-                            ? guest.confirm.phone
-                            : ''
                     }
                     item.link = `https://invitations-wedding.web.app/${state.admin.configurations.uid}/${guest.id}`
                     return item
@@ -287,6 +286,7 @@ export default {
                 open: false,
                 id: null,
                 name: '',
+                phone: '',
                 n_guests: null,
             },
         }
@@ -306,12 +306,14 @@ export default {
             this.dialog.id = id
             this.dialog.name = this.guests[index].name
             this.dialog.n_guests = this.guests[index].guests
+            this.dialog.phone = this.guests[index].phone
             this.dialog.open = true
         },
         closeDialog() {
             this.dialog.id = null
             this.dialog.name = ''
             this.dialog.n_guests = null
+            this.dialog.phone = ''
             this.dialog.open = false
         },
         createFilter(text) {

@@ -21,7 +21,8 @@ auth.onAuthStateChanged( async (user) => {
     }
 
     if(user){
-        store.dispatch('auth/setAuthData', { user, logged: true })
         await store.dispatch('admin/setWedding')
+        await store.dispatch('admin/fetchList')
+        store.dispatch('auth/setAuthData', { user, logged: true })
     }
 })
