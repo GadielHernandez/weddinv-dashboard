@@ -1,13 +1,20 @@
 <template>
-    <v-navigation-drawer app permanent mini-variant mini-variant-width="60" expand-on-hover>
+    <v-navigation-drawer 
+        :mini-variant.sync="mini" 
+        app 
+        :permanent="$vuetify.breakpoint.smAndUp"
+        mini-variant-width="70"
+        expand-on-hover
+        :temporary="!$vuetify.breakpoint.smAndUp"
+    >
         <v-list-item class="px-2 py-8">
-            <v-list-item-avatar>
-                <v-icon>
-                    mdi-account
-                </v-icon>
+            <v-list-item-avatar tile v-if="mini">
+                <v-img src="@/assets/logo-img.png" />
             </v-list-item-avatar>
 
-            <v-list-item-title>INVDER</v-list-item-title>
+            <v-list-item-title v-if="!mini">
+                <v-img src="@/assets/logo-letters.png" contain/>
+            </v-list-item-title>
         </v-list-item>
 
         <v-divider></v-divider>
@@ -46,6 +53,7 @@ export default {
     },
     data() {
         return {
+            mini: false,
             selected: null,
             menu_items: [{
                 text: 'Inicio',
