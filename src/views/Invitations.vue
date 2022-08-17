@@ -1,13 +1,9 @@
 <template>
     <div class="main">
-        <div v-if="!loading && ready" class="pa-3 pa-md-6">
-            <Navbar :height="'100px'" class="mb-6">
-                <template v-slot:title>
-                    <div>
-                        <h4 class="title text-h4 my-0 font-weight-bold">Invitados</h4>
-                    </div>
-                </template>
-            </Navbar>
+        <div v-if="!loading && ready" class="pa-3 pa-md-6 pt-0 pt-md-0">
+            <div class="mb-6 mt-3">
+                <h4 class="title text-h5 my-0 font-weight-bold">Invitados</h4>
+            </div>
 
             <information class="mb-6"/>
 
@@ -243,10 +239,10 @@
 import { mapActions, mapState } from 'vuex'
 import formInvitation from '../components/formGuest.vue'
 import information from '../components/informationGuests.vue'
-import Navbar from '../components/navigation/navbar.vue'
+// import Navbar from '../components/navigation/navbar.vue'
 export default {
     name: 'dashboard',
-    components: { formInvitation, information, Navbar },
+    components: { formInvitation, information },
     computed: {
         ...mapState({
             ready: (state) => state.admin.wedding !== null,

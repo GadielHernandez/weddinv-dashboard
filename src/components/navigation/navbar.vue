@@ -1,12 +1,14 @@
 <template>
     <v-app-bar
-        outlined
+        app
         color="background"
         flat
-        class="px-0 py-3 navbar"
-        height="unset"
+        class="navbar"
+        height="50"
+        clipped-left
     >
-        <slot name="title" />
+        <v-img src="@/assets/logo-img.png" height="30" max-width="30" contain/>
+        <v-img src="@/assets/logo-letters.png" max-width="115" contain class="ml-3"/>
         
         <v-spacer></v-spacer>
 
@@ -17,29 +19,27 @@
             <template v-slot:activator="{ on, attrs }">
                 <v-btn v-bind="attrs" v-on="on" 
                     fab 
-                    small
+                    x-small
                     color="primary"
                     depressed
                 >
-                    <v-icon>
-                        mdi-account-outline
+                    <v-icon small>
+                        mdi-account
                     </v-icon>
                 </v-btn>
             </template>
 
             <v-card width="300">
-                <v-card-text>
-                    <v-list-item>
+                <v-card-text class="text-center">
+                    <p>
                         <v-list-item-avatar color="primary">
                             <v-icon dark>
                                 mdi-account
                             </v-icon>
                         </v-list-item-avatar>
-                        <v-list-item-content>
-                            <v-list-item-title>{{ email }}</v-list-item-title>
-                            <v-list-item-subtitle>{{ wedding }}</v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
+                    </p>
+                    <p class="mb-0 font-weight-bold">{{ wedding }}.web.app</p>
+                    <p>{{ email }}</p>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-list dense nav>
@@ -47,9 +47,6 @@
                         <v-list-item-content>
                             <v-list-item-title>Cerrar sesión</v-list-item-title>
                         </v-list-item-content>
-                        <v-list-item-icon>
-                            <v-icon>mdi-logout-variant</v-icon>
-                        </v-list-item-icon>
                     </v-list-item>
                 </v-list>
             </v-card>
@@ -83,7 +80,6 @@ export default {
 
 <style>
 header.navbar > div{
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    border-bottom: thin solid rgba(0, 0, 0, 0.12);
 }
 </style>
