@@ -8,7 +8,7 @@
                         <p class="text-h4 my-2 font-weight-black">
                             {{ info.total }}
                         </p>
-                        <p class="mb-4 text-caption">Invitaciones creadas</p>
+                        <p class="mb-4 text-caption">Numero invitados</p>
                     </v-card-text>
                 </v-card>
             </v-col>

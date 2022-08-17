@@ -271,7 +271,7 @@ export default {
                             ? guest.confirm.n_guests
                             : 0
                     }
-                    item.link = `https://invitations-wedding.web.app/${state.admin.configurations.uid}/${guest.id}`
+                    item.link = `https://${state.admin.configurations.uid}.web.app/${guest.id}`
                     return item
                 }),
         }),
