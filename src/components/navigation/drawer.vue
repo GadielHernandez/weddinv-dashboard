@@ -66,11 +66,11 @@ export default {
             },{
                 text: 'Invitados',
                 icon: 'mdi-account-supervisor-outline',
-                route: 'Invitations'
+                route: 'Guests'
             },{
                 text: 'Invitaciòn',
                 icon: 'mdi-card-bulleted-outline',
-                route: ''
+                route: 'Invitation'
             }]
         }
     },

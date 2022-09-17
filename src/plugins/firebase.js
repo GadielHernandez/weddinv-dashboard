@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/analytics'
+import 'firebase/storage'
 
 const firebaseConfig = {
     apiKey: process.env.VUE_APP_FB_API_KEY,
@@ -19,9 +20,11 @@ firebase.analytics()
 
 const db = firebase.firestore()
 const auth = firebase.auth()
+const storage = firebase.storage()
 
 export {
     db,
-    auth
+    auth,
+    storage
 }
 

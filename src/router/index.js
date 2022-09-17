@@ -14,21 +14,29 @@ const routes = [
         },
     },
     {
-        path: '/:wedding?',
+        path: '/',
         name: 'Home',
-        component: () => import('../views/Invitations.vue'),
+        component: () => import('../views/Home.vue'),
         meta: {
             requiresAuth: true,
         },
     },
     {
-        path: '/invitations/:wedding?',
-        name: 'Invitations',
-        component: () => import('../views/Invitations.vue'),
+        path: '/guests',
+        name: 'Guests',
+        component: () => import('../views/Guests.vue'),
         meta: {
             requiresAuth: true,
         },
-    }
+    },
+    {
+        path: '/invitation',
+        name: 'Invitation',
+        component: () => import('../views/Invitation.vue'),
+        meta: {
+            requiresAuth: true,
+        },
+    },
 ]
 
 const router = new VueRouter({

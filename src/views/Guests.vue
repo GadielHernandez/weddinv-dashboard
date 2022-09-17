@@ -1,9 +1,9 @@
 <template>
     <div class="main">
-        <div v-if="!loading && ready" class="pa-3 pa-md-6 pt-0 pt-md-0">
-            <div class="mb-6 mt-3">
+        <div v-if="ready" class="pa-3 pa-md-6 pt-0 pt-md-0">
+            <v-toolbar flat class="title">
                 <h4 class="title text-h5 my-0 font-weight-bold">Invitados</h4>
-            </div>
+            </v-toolbar>
 
             <information class="mb-6"/>
 
@@ -239,7 +239,6 @@
 import { mapActions, mapState } from 'vuex'
 import formInvitation from '../components/formGuest.vue'
 import information from '../components/informationGuests.vue'
-// import Navbar from '../components/navigation/navbar.vue'
 export default {
     name: 'dashboard',
     components: { formInvitation, information },
@@ -290,7 +289,6 @@ export default {
     methods: {
         ...mapActions({
             setWedding: 'admin/setWedding',
-            updateList: 'admin/fetchList',
             saveDelete: 'admin/deleteGuest',
             blockGuest: 'admin/blockGuest',
             setView: 'view/setView'
@@ -350,10 +348,8 @@ export default {
             }
         },
     },
-    async mounted() {
-        await this.updateList()
-        this.loading = false
-        this.setView('Invitations')
+    mounted() {
+        this.setView('Guests')
     },
 }
 </script>
