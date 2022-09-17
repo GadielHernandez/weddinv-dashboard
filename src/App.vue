@@ -46,4 +46,8 @@ export default {
     justify-content: center;
     flex-direction: column;
 }
+header.title > div{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
 </style>
