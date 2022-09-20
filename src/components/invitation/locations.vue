@@ -136,6 +136,15 @@ export default {
         ...mapActions({
             updateSection: 'admin/editSectionInvitation',
         }),
+        init(){
+            this.ceremony_active = this.locations.ceremony !== undefined
+            this.party_active = this.locations.party !== undefined
+            if(this.ceremony_active)
+                this.ceremony = this.locations.ceremony
+            if(this.party_active)
+                this.party = this.locations.party
+            
+        },
         async trySave() {
             if(this.ceremony_active && Object.values(this.ceremony).includes(null)){
                 this.save.message.text = 'Hacen falta datos en ceremonia'
@@ -175,8 +184,7 @@ export default {
         },
     },
     mounted() {
-        this.ceremony_active = this.locations.ceremony !== undefined
-        this.party_active = this.locations.party !== undefined
+        this.init()
     },
 }
 </script>

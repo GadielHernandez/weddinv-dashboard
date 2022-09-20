@@ -67,7 +67,8 @@
                     !bride.father ||
                         !bride.mother ||
                         !groom.father ||
-                        !groom.mother
+                        !groom.mother ||
+                        !photo
                 "
             >
                 Guardar
@@ -120,6 +121,12 @@ export default {
         ...mapActions({
             updateSection: 'admin/editSectionInvitation',
         }),
+        init(){
+            this.bride.father = this.parents.bride_father
+            this.bride.mother = this.parents.bride_mother
+            this.groom.father = this.parents.groom_father
+            this.groom.mother = this.parents.groom_mother
+        },
         async trySave() {
             this.save.loading = true
             try {
@@ -163,6 +170,9 @@ export default {
         close() {
             this.$emit('close')
         },
+    },
+    mounted() {
+        this.init()
     },
 }
 </script>
