@@ -58,9 +58,10 @@ import { mapActions, mapState } from 'vuex'
 import layout from '../components/invitation/layout.vue'
 import parents from '../components/invitation/parents.vue'
 import locations from '../components/invitation/locations.vue'
+import dresscode from '../components/invitation/dresscode.vue'
 export default {
     name: 'Invitation',
-    components: { layout, parents, locations },
+    components: { layout, parents, locations, dresscode },
     computed: {
         ...mapState({
             configurations: (state) => state.admin.configurations,
