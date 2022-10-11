@@ -60,9 +60,10 @@ import parents from '../components/invitation/parents.vue'
 import locations from '../components/invitation/locations.vue'
 import dresscode from '../components/invitation/dresscode.vue'
 import gifts from '../components/invitation/gifts.vue'
+import gallery from '../components/invitation/gallery.vue'
 export default {
     name: 'Invitation',
-    components: { layout, parents, locations, dresscode, gifts },
+    components: { layout, parents, locations, dresscode, gifts, gallery },
     computed: {
         ...mapState({
             configurations: (state) => state.admin.configurations,

@@ -95,17 +95,30 @@ const actions = {
             if (images) {
                 delete section.data.images
                 const images_db = {}
-                
+
                 const actual_section = state.configurations[section.name]
-                if (actual_section)
+                if (actual_section) {
+                    const new_images = Object.keys(images)
                     Object.keys(actual_section.images).forEach((image) => {
-                        images_to_storage.push({
-                            name: actual_section.images[image],
-                            delete: true,
-                        })
+                        const conserved = new_images.find((img) => img === image)
+                        if (!conserved)
+                            images_to_storage.push({
+                                name: actual_section.images[image],
+                                delete: true,
+                            })
+                        else if(actual_section.images[conserved] !== images[conserved])
+                            images_to_storage.push({
+                                name: actual_section.images[image],
+                                delete: true,
+                            })
                     })
+                }
                 
                 Object.keys(images).forEach((img) => {
+                    if (typeof images[img] === 'string') {
+                        images_db[img] = images[img]
+                        return
+                    }
                     const [name, type] = images[img].name.split('.')
                     const valid_name = `${name.replace(/\s+/g, '')}.${type}`
                     images_db[img] = valid_name
@@ -116,14 +129,14 @@ const actions = {
                 })
                 section.data.images = images_db
             }
-            
+
             Promise.all(
                 images_to_storage.map((item) => {
-                    const ref = storage.ref(`${state.wedding}/${section.name}/${item.name}`)
-                    if(item.delete)
-                        return ref.delete()
-                    else
-                        return ref.put(item.img)
+                    const ref = storage.ref(
+                        `${state.wedding}/${section.name}/${item.name}`
+                    )
+                    if (item.delete) return ref.delete()
+                    else return ref.put(item.img)
                 })
             )
                 .then(() => {
