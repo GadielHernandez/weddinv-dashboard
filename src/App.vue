@@ -7,13 +7,14 @@
                 </div>
             </template>
         </navbar>
-        <v-divider ></v-divider>
+        <v-divider v-if="logged"></v-divider>
         <drawer v-if="logged"/>
 
         <v-main>
-            <v-container fluid>
+            <v-container fluid v-if="logged">
                 <router-view></router-view>
             </v-container>
+            <router-view v-else></router-view>
         </v-main>
     </v-app>
 </template>

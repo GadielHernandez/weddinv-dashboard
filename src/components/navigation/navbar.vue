@@ -62,7 +62,7 @@ export default {
     computed: {
         ...mapState({
             email: state => state.auth.user && state.auth.user.email,
-            wedding: state => state.admin.configurations.uid
+            wedding: state => state.admin.configurations ? state.admin.configurations.uid: null
         })
     },
     methods: {
