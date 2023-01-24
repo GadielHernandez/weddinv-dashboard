@@ -72,15 +72,12 @@ export default {
                 }
                 
                 state.admin.list.forEach((guest) => {
-                    info.total += guest.guests
+                    info.total += guest.guests.length
                     if (guest.confirm) {
-                        if (guest.confirm.answer) {
-                            info.attend += guest.confirm.n_guests
-                            info.no_attend +=
-                                guest.guests - guest.confirm.n_guests
-                        } else {
-                            info.no_attend += guest.guests
-                        }
+                        guest.guests.forEach( guest_info => {
+                            if(guest_info.confirmed) info.attend++
+                            else info.no_attend++
+                        })
                     }
                 })
                 

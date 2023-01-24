@@ -9,7 +9,34 @@
 
             <v-card class="rounded-lg" outlined>
                 <v-toolbar flat>
+                    <v-select
+                        v-model="filter_type"
+                        :items="['Nombre', 'Invitado', 'Estatus']"
+                        label="Filtro"
+                        dense
+                        flat
+                        solo
+                        outlined
+                        hide-details
+                        style="font-size: 12px; max-width: 110px;"
+                        class="mr-1"
+                        background-color="primary"
+                        dark
+                        @input="search = ''"
+                    ></v-select>
+                    <v-select
+                        v-if="filter_type === 'Estatus'"
+                        v-model="search"
+                        :items="['Con Respuesta', 'Sin Respuesta']"
+                        dense
+                        label="Estatus"
+                        solo
+                        flat
+                        outlined
+                        hide-details
+                    ></v-select>
                     <v-text-field
+                        v-else
                         v-model="search"
                         label="Buscar"
                         append-icon="mdi-magnify"
@@ -18,28 +45,13 @@
                         solo
                         outlined
                         hide-details
-                        @input="filter_status = null"
                     />
-                    <v-select
-                        v-model="filter_status"
-                        :items="['Sin responder', 'No asistire', 'Asistire']"
-                        label="Filtro"
-                        dense
-                        flat
-                        solo
-                        outlined
-                        hide-details
-                        class="ml-1"
-                        style="font-size: 12px; max-width: 150px;"
-                        
-                        clearable
-                    ></v-select>
                     <v-spacer></v-spacer>
                     <v-btn
                         class="px-3"
                         color="primary"
                         dark
-                        @click="openDialog()"
+                        @click="openInvitationForm()"
                         style="min-width: unset"
                     >
                         <v-icon small>mdi-plus</v-icon>
@@ -54,10 +66,15 @@
                         { text: 'Invitados', value: 'guests', align: 'center', sortable: false },
                         { text: 'Estatus', value: 'status', align: 'center', sortable: false },
                         { text: 'Link', value: 'link' },
-                        { text: 'Opciones', value: 'actions', sortable: false },
+                        { text: '', value: 'data-table-expand'},
+                        { text: '', value: 'actions', sortable: false, align: 'right' },
                     ]"
                     :items="guests"
-                    :search="search ? search : filter_status"
+                    :search="search"
+                    :expanded.sync="expanded"
+                    :custom-filter="customFilter"
+                    show-expand
+                    @click:row="clickRow"
                 >
                     <template v-slot:item.name="{ item }">
                         <div>
@@ -83,17 +100,17 @@
                     <template v-slot:item.guests="{ item }">
                         <div v-if="item.confirm">
                             <v-chip small outlined color="success">
-                                {{ item.n_guests }} 
+                                {{ item.guests.filter( g => g.confirmed ).length }} 
                                 <v-icon right small>mdi-checkbox-marked-circle</v-icon>
                             </v-chip>
                             <v-chip small outlined class="ml-1 ml-sm-0 ml-md-1 mt-0 mt-sm-1 mt-md-0" color="warning">
-                                {{ item.guests - item.n_guests }} 
+                                {{ item.guests.filter( g => !g.confirmed ).length  }} 
                                 <v-icon right small>mdi-close-circle</v-icon> 
                             </v-chip>
                         </div>
                         <div v-else>
                             <v-chip small outlined >
-                                {{ item.guests }} 
+                                {{ item.guests.length }} 
                                 <v-icon right small>mdi-account-outline</v-icon>
                             </v-chip>
                         </div>
@@ -157,13 +174,13 @@
                     <template v-slot:item.actions="{ item }">
                         <v-menu>
                             <template v-slot:activator="{ on, attrs }">
-                                <v-btn icon v-bind="attrs" v-on="on">
-                                    <v-icon>mdi-chevron-down</v-icon>
+                                <v-btn icon v-bind="attrs" v-on="on" small>
+                                    <v-icon>mdi-dots-horizontal</v-icon>
                                 </v-btn>
                             </template>
 
                             <v-list dense color="py-0">
-                                <v-list-item @click="openDialog(item.id)">
+                                <v-list-item @click="openInvitationForm(item.id)" class="pr-1">
                                     <v-list-item-content class="text-caption">
                                         Editar
                                     </v-list-item-content>
@@ -174,7 +191,7 @@
                                     </v-list-item-action>
                                 </v-list-item>
                                 <v-divider></v-divider>
-                                <v-list-item>
+                                <v-list-item class="pr-1">
                                     <v-list-item-content class="text-caption">
                                         Expirar
                                     </v-list-item-content>
@@ -185,7 +202,7 @@
                                     </v-list-item-action>
                                 </v-list-item>
                                 <v-divider></v-divider>
-                                <v-list-item @click="deleteGuest(item.id)">
+                                <v-list-item @click="deleteGuest(item.id)" class="pr-1">
                                     <v-list-item-content class="text-caption">
                                         Eliminar
                                     </v-list-item-content>
@@ -197,6 +214,28 @@
                                 </v-list-item>
                             </v-list>
                         </v-menu>
+                    </template>
+                    <template v-slot:expanded-item="{ headers, item }">
+                        <td :colspan="headers.length" class="py-0 px-md-8 px-4">
+                            <v-list>
+                                <v-list-item v-for="guest in item.guests" :key="guest.id" >
+                                    <v-list-item-content>
+                                        {{ guest.name }} {{ guest.confirm }}
+                                    </v-list-item-content>
+                                    <v-list-item-action>
+                                        <v-icon v-if="!item.confirm">
+                                            mdi-checkbox-blank-circle-outline
+                                        </v-icon>
+                                        <v-icon v-else-if="guest.confirmed" color="success">
+                                            mdi-check-circle-outline
+                                        </v-icon>
+                                        <v-icon v-else color="red">
+                                            mdi-close-circle-outline
+                                        </v-icon>
+                                    </v-list-item-action>
+                                </v-list-item>
+                            </v-list>
+                        </td>
                     </template>
                 </v-data-table>
                 <!-- eslint-enable -->
@@ -211,12 +250,13 @@
             </v-card>
 
             <formInvitation
-                :id="dialog.id"
-                :n_guests="dialog.n_guests"
-                :name_inv="dialog.name"
-                :phone="dialog.phone"
-                :open="dialog.open"
-                @close="closeDialog"
+                :id="invitation_form.id"
+                :guests="invitation_form.guests"
+                :name_inv="invitation_form.name"
+                :phone="invitation_form.phone"
+                :open="invitation_form.open"
+                :confirmed="invitation_form.confirmed"
+                @close="closeInvitationForm"
             />
         </div>
         <div class="main-helper d-flex" v-else>
@@ -238,7 +278,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import formInvitation from '../components/formGuest.vue'
-import information from '../components/informationGuests.vue'
+import information from '../components/guests/informationGuests.vue'
 export default {
     name: 'dashboard',
     components: { formInvitation, information },
@@ -251,20 +291,10 @@ export default {
                         id: guest.id,
                         name: guest.name,
                         guests: guest.guests,
-                        status: 'Sin responder',
                         confirm: guest.confirm,
-                        n_guests: 0,
                         phone: guest.phone,
                         link: '',
                         out_time: guest.out_time ? true : false,
-                    }
-                    if (guest.confirm) {
-                        item.status = guest.confirm.answer
-                            ? 'Asistire'
-                            : 'No asistire'
-                        item.n_guests = guest.confirm.n_guests
-                            ? guest.confirm.n_guests
-                            : 0
                     }
                     item.link = `https://${state.admin.configurations.uid}.web.app/${guest.id}`
                     return item
@@ -275,15 +305,17 @@ export default {
         return {
             loading: true,
             filters: null,
-            filter_status: null,
+            filter_type: 'Nombre',
+            expanded: [],
             search: '',
-            dialog: {
+            invitation_form: {
                 open: false,
                 id: null,
                 name: '',
                 phone: '',
                 n_guests: null,
-            },
+                confirmed: false
+            }
         }
     },
     methods: {
@@ -293,25 +325,55 @@ export default {
             blockGuest: 'admin/blockGuest',
             setView: 'view/setView'
         }),
-        openDialog(id) {
-            if (!id) return this.dialog.open = true
+        clickRow(item){
+            const isExpanded = this.expanded.find( i => i.id === item.id)
+            if(isExpanded){
+                this.expanded = []
+                return
+            }
+
+            if(this.expanded.length > 0)
+                this.expanded = []
+
+            this.expanded.push(item)
+        },
+        openInvitationForm(id) {
+            if (!id) return this.invitation_form.open = true
             
             const index = this.guests.findIndex((g) => g.id === id)
-            this.dialog.id = id
-            this.dialog.name = this.guests[index].name
-            this.dialog.n_guests = this.guests[index].guests
-            this.dialog.phone = this.guests[index].phone
-            this.dialog.open = true
+            this.invitation_form.id = id
+            this.invitation_form.name = this.guests[index].name
+            this.invitation_form.guests = this.guests[index].guests
+            this.invitation_form.phone = this.guests[index].phone
+            this.invitation_form.confirmed = this.guests[index].confirm === true
+            this.invitation_form.open = true
         },
-        closeDialog() {
-            this.dialog.id = null
-            this.dialog.name = ''
-            this.dialog.n_guests = null
-            this.dialog.phone = ''
-            this.dialog.open = false
+        closeInvitationForm() {
+            this.invitation_form.id = null
+            this.invitation_form.name = ''
+            this.invitation_form.guests = null
+            this.invitation_form.phone = ''
+            this.invitation_form.open = false
         },
-        createFilter(text) {
-            this.search = text
+        customFilter(value, search, invitation) {
+            if(this.filter_type === 'Estatus')
+                return this.search === 'Con Respuesta'
+                    ? invitation.guests.some( g => g.confirmed !== null )
+                    : invitation.guests.some( g => g.confirmed === null )
+
+            const serach_lower = search ? search.toString().toLowerCase(): ''
+            if(this.filter_type === 'Nombre')
+                return invitation.name
+                    .toString()
+                    .toLowerCase()
+                    .includes(serach_lower)
+
+            if(this.filter_type === 'Invitado')
+                return invitation.guests
+                    .some( guest => 
+                        guest.name.toLowerCase().includes(serach_lower)
+                    )
+
         },
         async deleteGuest(id) {
             await this.saveDelete({ id })
@@ -323,9 +385,8 @@ export default {
             })
         },
         sendWhatsapp(link, phone){
-            const message = `¡Hola! Es un gusto poder invitarte para que seas parte del dia de boda. \nDentro de la invitación incluimos todos los datos, puedes ingresar dando clic en el enlace. Te pedimos que confirmes dentro de la invitación. \n¡Te esperamos! \n ${ link }`
+            const message = `¡Hola! Es un gusto poder invitarte para que seas parte del dia de nuestra boda. \nDentro de la invitación incluimos todos los datos, puedes ingresar dando clic en el enlace. Te pedimos que confirmes dentro de la invitación. \n¡Te esperamos! \n ${ link }`
             const url_wa = `https://wa.me/52${phone.replace(/\s/g, '')}?text=${encodeURI(message)}`
-            console.log(url_wa)
             window.open(url_wa, '_blank')
         },
         copyLink(link) {
@@ -364,5 +425,8 @@ export default {
 }
 .no-invitations{
     min-height: 50vh;
+}
+.v-data-table > .v-data-table__wrapper tbody tr.v-data-table__expanded__content{
+    box-shadow: none !important;
 }
 </style>
