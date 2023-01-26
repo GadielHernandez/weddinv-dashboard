@@ -385,7 +385,7 @@ export default {
             })
         },
         sendWhatsapp(link, phone){
-            const message = `¡Hola! Es un gusto poder invitarte para que seas parte del dia de nuestra boda. \nDentro de la invitación incluimos todos los datos, puedes ingresar dando clic en el enlace. Te pedimos que confirmes dentro de la invitación. \n¡Te esperamos! \n ${ link }`
+            const message = `¡Hola!\n\nEs un gusto poder invitarte a Nuestra Boda\n\nTe comparto la Invitación.\nIncluimos todos los datos dentro de ella, puedes ingresar dando clic en el enlace y ahí mismo confirmar tu asistencia. \n\n¡Estamos muy emocionados de compartir este momento contigo! \n\n ${ link }`
             const url_wa = `https://wa.me/52${phone.replace(/\s/g, '')}?text=${encodeURI(message)}`
             window.open(url_wa, '_blank')
         },
