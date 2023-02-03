@@ -285,6 +285,7 @@ export default {
     computed: {
         ...mapState({
             ready: (state) => state.admin.wedding !== null,
+            whatsapp_msg: (state) => state.admin.configurations.attendance.whatsapp_msg,
             guests: (state) =>
                 state.admin.list.map((guest) => {
                     const item = {
@@ -385,9 +386,15 @@ export default {
             })
         },
         sendWhatsapp(link, phone){
-            const message = `¡Hola!\n\nEs un gusto poder invitarte a Nuestra Boda\n\nTe comparto la Invitación.\nIncluimos todos los datos dentro de ella, puedes ingresar dando clic en el enlace y ahí mismo confirmar tu asistencia. \n\n¡Estamos muy emocionados de compartir este momento contigo! \n\n ${ link }`
-            const url_wa = `https://wa.me/52${phone.replace(/\s/g, '')}?text=${encodeURI(message)}`
-            window.open(url_wa, '_blank')
+            let custom_message = this.whatsapp_msg
+            custom_message += '\n\n' + link
+            // const message = '¡Hola!👋🏼%0A%0AEs%20un%20gusto%20poder%20invitarte%20a%20*Nuestra%20Boda*%20✨%0A%0ATe%20comparto%20la%20Invitación%20💌%0AIncluimos%20todos%20los%20datos%20dentro%20de%20ella%2C%20puedes%20ingresar%20dando%20clic%20en%20el%20enlace%20y%20ahí%20mismo%20confirmar%20tu%20asistencia.%0A%0A¡Estamos%20muy%20emocionados%20de%20compartir%20este%20momento%20contigo!%20🤍%0A%0A'
+            // const url_wa = `https://wa.me/52${phone.replace(/\s/g, '')}?text=${encodeURI(message)}`
+            // const url_wa = `https://wa.me/52${phone.replace(/\s/g, '')}?text=${message}`
+            // console.log(url_wa)
+            window.open('https://api.whatsapp.com/send?phone=52' + phone.replace(/\s/g, '') + '&text='+ encodeURIComponent(custom_message), '_blank')
+            // window.open(url_wa, '_blank')
+            // console.log('https://api.whatsapp.com/send?phone=528119135661' + '&text='+ encodeURIComponent(custom_message), phone )
         },
         copyLink(link) {
             const el = document.createElement('textarea')
