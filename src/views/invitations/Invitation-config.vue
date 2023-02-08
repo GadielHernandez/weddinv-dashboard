@@ -1,7 +1,15 @@
 <template>
     <div class="pa-3 pa-md-6 pt-0 pt-md-0" v-if="configurations">
+        <v-btn
+                small
+                icon
+                @click="$router.push({name: 'Invitations'})"
+                color="primary"
+            >
+                <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
         <v-toolbar flat class="title">
-            <h4 class="title text-h5 my-0 font-weight-bold">Invitación</h4>
+            <h4 class="title text-h5 my-0 font-weight-bold">Editar Invitación</h4>
             <v-spacer></v-spacer>
             <v-btn
                 small
@@ -55,13 +63,13 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import layout from '../components/invitation/layout.vue'
-import parents from '../components/invitation/parents.vue'
-import locations from '../components/invitation/locations.vue'
-import dresscode from '../components/invitation/dresscode.vue'
-import gifts from '../components/invitation/gifts.vue'
-import gallery from '../components/invitation/gallery.vue'
-import attendance from '../components/invitation/attendance.vue'
+import layout from '../../components/invitation/layout.vue'
+import parents from '../../components/invitation/parents.vue'
+import locations from '../../components/invitation/locations.vue'
+import dresscode from '../../components/invitation/dresscode.vue'
+import gifts from '../../components/invitation/gifts.vue'
+import gallery from '../../components/invitation/gallery.vue'
+import attendance from '../../components/invitation/attendance.vue'
 export default {
     name: 'Invitation',
     components: { layout, parents, locations, dresscode, gifts, gallery, attendance },

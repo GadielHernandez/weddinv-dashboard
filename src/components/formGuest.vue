@@ -9,7 +9,7 @@
                     <v-divider></v-divider>
                     <v-card-text>
                         <v-container>
-                            <p class="font-weight-black">Para: {{confirmed}}</p>
+                            <p class="font-weight-black">Para:</p>
                             <v-text-field
                                 v-model="name_local"
                                 color="primary"

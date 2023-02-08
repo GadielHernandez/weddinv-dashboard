@@ -64,13 +64,13 @@ export default {
                 icon: 'mdi-home-outline',
                 route: 'Home'
             },{
-                text: 'Invitados',
-                icon: 'mdi-account-supervisor-outline',
-                route: 'Guests'
+                text: 'Invitaciones',
+                icon: 'mdi-card-account-details-outline',
+                route: 'Invitations'
             },{
-                text: 'Invitaciòn',
-                icon: 'mdi-card-bulleted-outline',
-                route: 'Invitation'
+                text: 'Invitados',
+                icon: 'mdi-account-multiple',
+                route: 'Guests'
             }]
         }
     },

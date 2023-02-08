@@ -22,17 +22,25 @@ const routes = [
         },
     },
     {
-        path: '/guests',
-        name: 'Guests',
-        component: () => import('../views/Guests.vue'),
+        path: '/invitations',
+        name: 'Invitations',
+        component: () => import('../views/invitations/Home.vue'),
         meta: {
             requiresAuth: true,
         },
     },
     {
-        path: '/invitation',
-        name: 'Invitation',
-        component: () => import('../views/Invitation.vue'),
+        path: '/invitations/config',
+        name: 'InvitationsConfig',
+        component: () => import('../views/invitations/Invitation-config.vue'),
+        meta: {
+            requiresAuth: true,
+        },
+    },
+    {
+        path: '/guests',
+        name: 'Guests',
+        component: () => import('../views/Guests.vue'),
         meta: {
             requiresAuth: true,
         },
