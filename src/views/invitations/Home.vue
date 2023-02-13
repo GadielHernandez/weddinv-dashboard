@@ -221,12 +221,8 @@
             </v-card>
 
             <formInvitation
-                :id="invitation_form.id"
-                :guests="invitation_form.guests"
-                :name_inv="invitation_form.name"
-                :phone="invitation_form.phone"
                 :open="invitation_form.open"
-                :confirmed="invitation_form.confirmed"
+                :invitation="invitation_form"
                 @close="closeInvitationForm"
             />
         </div>
@@ -249,7 +245,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import formInvitation from '../../components/formGuest.vue'
-import information from '../../components/guests/informationGuests.vue'
+import information from '../../components/invitation/information.vue'
 export default {
     name: 'dashboard',
     components: { formInvitation, information },

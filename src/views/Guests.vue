@@ -38,7 +38,7 @@
                     </v-list>
                 </v-menu>
             </v-toolbar>
-
+            
             <v-card class="rounded-lg" outlined ref="table">
                 <v-toolbar flat>
                     <v-spacer></v-spacer>
@@ -94,7 +94,7 @@
                                     <v-list-item-subtitle
                                         style="font-size: 12px"
                                     >
-                                        {{ item.invitation }}
+                                        {{ item.type === TYPES.PERSONAL ? 'Personal' : item.invitation}}
                                     </v-list-item-subtitle>
                                 </v-list-item-content>
                             </v-list-item>
@@ -141,6 +141,7 @@ import { mapActions, mapState } from 'vuex'
 import information from '../components/guests/informationGuests.vue'
 import printPDF from '../components/guests/printPDF.vue'
 import generateCSV from '../plugins/generateCSV'
+import TYPES from '../plugins/invitations-types'
 
 export default {
     name: 'Guests',
@@ -157,6 +158,7 @@ export default {
                             invitation: invitation.name,
                             name: guest.name,
                             confirmed: guest.confirmed,
+                            type: invitation.type
                         })
                     })
                 })
@@ -171,9 +173,9 @@ export default {
                 { text: 'Nombre', value: 'name' },
                 { text: 'Asistencia', value: 'confirmed', align: 'center' },
             ],
-            htmlToPrint: null,
             search: [],
             list_guests: [],
+            TYPES: TYPES
         }
     },
     methods: {
@@ -186,9 +188,6 @@ export default {
                     this.search.length === 0 ||
                     this.search.includes(guest.confirmed)
             )
-        },
-        downloadPDF(){
-            this.htmlToPrint = this.$refs.table
         },
         downloadCSVData() {
             let CSV = ''
@@ -214,7 +213,6 @@ export default {
     mounted() {
         this.setView('Guests')
         this.filterGuests()
-        this.htmlToPrint = this.$refs.table
     },
 }
 </script>

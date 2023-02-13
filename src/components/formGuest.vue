@@ -2,10 +2,32 @@
     <div>
         <v-dialog v-model="open" max-width="600px">
                 <v-card>
-                    <v-card-title>
-                        <span class="headline" v-if="id">Editar invitación</span>
+                    <v-toolbar flat class="px-4 px-md-6">
+                        <span class="headline" v-if="invitation.id">Editar invitación</span>
                         <span class="headline" v-else>Añadir invitación</span>
-                    </v-card-title>
+                        <v-spacer></v-spacer>
+                        <div style="width: 65px">
+                            <v-select
+                                v-model="type_local"
+                                :prepend-inner-icon="type_local === TYPES.PERSONAL ? 'mdi-account': 'mdi-account-group'"
+                                :items="[{
+                                    text: 'Personal',
+                                    value: TYPES.PERSONAL
+                                },{
+                                    text: 'Grupal',
+                                    value: TYPES.GRUPAL
+                                }]" 
+                                color="primary"
+                                outlined
+                                flat
+                                solo
+                                hide-details
+                                :disabled="invitation.confirmed"
+                                dense
+                                class="type"
+                            />
+                        </div>
+                    </v-toolbar>
                     <v-divider></v-divider>
                     <v-card-text>
                         <v-container>
@@ -16,9 +38,11 @@
                                 outlined
                                 flat
                                 solo
-                                label="Nombre en la invitacion"
+                                :label="type_local === TYPES.PERSONAL
+                                    ? 'Nombre del invitado'
+                                    : 'Nombre en la invitacion'"
                                 persistent-hint
-                                :disabled="confirmed"
+                                :disabled="invitation.confirmed"
                             ></v-text-field>
                             <p class="font-weight-black">Telefono a enviar:</p>
                             <v-text-field
@@ -29,9 +53,9 @@
                                 solo
                                 label="Telefono celular"
                                 persistent-hint
-                                :disabled="confirmed"
+                                :disabled="invitation.confirmed"
                             ></v-text-field>
-                            <div class="d-flex">
+                            <div class="d-flex" v-if="type_local === TYPES.GRUPAL">
                                 <p class="font-weight-black my-auto">Invitados:</p>
                                 <v-spacer></v-spacer>
                                 <v-btn 
@@ -39,24 +63,28 @@
                                     small 
                                     text 
                                     class="my-auto" 
-                                    :disabled="this.name_local === '' || confirmed"
+                                    :disabled="this.name_local === '' || invitation.confirmed"
                                     @click="addGuestName"
                                 >
                                     Agregar
                                 </v-btn>
                             </div>
-                            <v-text-field
-                                v-for="(guest, index) in guests_local"
-                                v-model="guest.name"
-                                class="mt-2"
-                                color="primary"
-                                outlined
-                                flat
-                                solo
-                                hide-details=""
-                                :key="index"
-                                :disabled="confirmed"
-                            ></v-text-field>
+                            <div v-if="type_local === TYPES.GRUPAL">
+                                <v-text-field
+                                    v-for="(guest, index) in guests_local"
+                                    v-model="guest.name"
+                                    class="mt-2"
+                                    color="primary"
+                                    outlined
+                                    flat
+                                    solo
+                                    hide-details=""
+                                    :key="index"
+                                    :disabled="invitation.confirmed"
+                                    append-icon="mdi-delete"
+                                    @click:append="deleteGuest(index)"
+                                ></v-text-field>
+                            </div>
                         </v-container>
                     </v-card-text>
                     <v-divider></v-divider>
@@ -68,7 +96,7 @@
                         <v-btn 
                             color="primary" 
                             @click="saveChange"
-                            :disabled="name_local === '' || confirmed"
+                            :disabled="name_local === '' || invitation.confirmed"
                         >
                             Guardar
                         </v-btn>
@@ -80,14 +108,17 @@
 
 <script>
 import { mapActions } from 'vuex'
+import TYPES from '../plugins/invitations-types'
 export default {
     name: 'formInvitation',
-    props: ['id', 'name_inv', 'phone', 'guests', 'open', 'confirmed'],
+    props: ['open', 'invitation'],
     data() {
         return {
             name_local: '',
             phone_local: '',
-            guests_local: []
+            guests_local: [],
+            type_local: TYPES.GRUPAL,
+            TYPES
         }
     },
     methods: {
@@ -107,38 +138,66 @@ export default {
                 confirmed: null
             })
         },
+        deleteGuest(index){
+            this.guests_local.splice(index, 1)
+        },
         async saveChange() {
-            if(this.id === null)
+            if(this.type_local === TYPES.PERSONAL)
+                this.guests_local = [{
+                    name: this.name_local,
+                    confirmed: null
+                }]
+            if(this.invitation.id === null)
                 await this.addGuest({
                     name: this.name_local,
                     guests: this.guests_local,
-                    phone: this.phone_local
+                    phone: this.phone_local,
+                    type: this.type_local
                 })
             else
                 await this.saveEdit({
-                    id: this.id,
+                    id: this.invitation.id,
                     update: {
                         name: this.name_local,
                         guests: this.guests_local,
-                        phone: this.phone_local
+                        phone: this.phone_local,
+                        type: this.type_local
                     }
                 })
             this.closeDialog()
         }
     },
     watch: {
-        name_inv(new_value){
-            this.name_local = new_value
+        open(value){
+            if(value){
+                this.name_local = this.invitation.name
+                this.phone_local = this.invitation.phone
+                this.guests_local = this.invitation.guests
+                this.type_local = this.invitation.type 
+                    ? this.invitation.type
+                    : TYPES.GRUPAL
+            }
         },
-        guests(new_value){
-            if(new_value)
-                this.guests_local = new_value
-            else
-                this.guests_local = []
-        },
-        phone(new_value){
-            this.phone_local = new_value
-        }
     },
 }
 </script>
+
+<style>
+.type .v-input__prepend-inner {
+    margin: auto !important;
+    padding: 0 !important;
+}
+.type .v-select__selections {
+    display: none !important;
+}
+.type .v-select__slot {
+    width: 25px !important;
+}
+.type .v-input__append-inner{
+    margin: auto !important;
+    padding: 0px !important;
+}
+.type .v-input__slot {
+    padding: 0px !important;
+}
+</style>
