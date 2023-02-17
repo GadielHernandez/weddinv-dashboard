@@ -220,7 +220,7 @@
                 </v-card-text>
             </v-card>
 
-            <formInvitation
+             <formInvitation
                 :open="invitation_form.open"
                 :invitation="invitation_form"
                 @close="closeInvitationForm"
@@ -261,6 +261,7 @@ export default {
                         guests: invitation.guests,
                         confirm: invitation.confirm,
                         phone: invitation.phone,
+                        type: invitation.type,
                         link: '',
                         out_time: invitation.out_time ? true : false,
                     }
@@ -281,7 +282,8 @@ export default {
                 id: null,
                 name: '',
                 phone: '',
-                n_guests: null,
+                type: null,
+                guests: null,
                 confirmed: false
             }
         }
@@ -313,6 +315,7 @@ export default {
             this.invitation_form.name = this.invitations[index].name
             this.invitation_form.guests = this.invitations[index].guests
             this.invitation_form.phone = this.invitations[index].phone
+            this.invitation_form.type = this.invitations[index].type
             this.invitation_form.confirmed = this.invitations[index].confirm === true
             this.invitation_form.open = true
         },
@@ -321,6 +324,7 @@ export default {
             this.invitation_form.name = ''
             this.invitation_form.guests = null
             this.invitation_form.phone = ''
+            this.invitation_form.type = ''
             this.invitation_form.open = false
         },
         customFilter(value, search, invitation) {

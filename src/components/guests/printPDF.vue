@@ -26,6 +26,7 @@
                                                 : guest.confirmed ? 'Confirmada': 'Cancelada' 
                                         }}
                                     </td>
+                                    <td>{{guest.type || 'GRUPAL'}}</td>
                                 </tr>
                             </tbody>
                         </template>

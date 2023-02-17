@@ -8,7 +8,7 @@
             <information />
 
             <v-toolbar class="my-4 pa-0" flat dense>
-                <v-btn small color="primary">
+                <v-btn small color="primary" @click="openInvitationForm()">
                     Añadir Invitado
                 </v-btn>
                 <v-spacer></v-spacer>
@@ -27,7 +27,7 @@
                     <v-list>
                         <printPDF 
                             :guests="list_guests" 
-                            :headers="['Nombre', 'Invitacion', 'Asistencia']"
+                            :headers="['Nombre', 'Invitacion', 'Asistencia', 'Tipo']"
                         />
                         <v-divider></v-divider>
                         <v-list-item @click="downloadCSVData">
@@ -75,6 +75,7 @@
                     v-if="guests && guests.length > 0"
                     :headers="headers"
                     :items="list_guests"
+                    @click:row="openInvitationForm"
                 >
                     <template v-slot:item.name="{ item }">
                         <div>
@@ -94,7 +95,7 @@
                                     <v-list-item-subtitle
                                         style="font-size: 12px"
                                     >
-                                        {{ item.type === TYPES.PERSONAL ? 'Personal' : item.invitation}}
+                                        {{ item.invitation }}
                                     </v-list-item-subtitle>
                                 </v-list-item-content>
                             </v-list-item>
@@ -121,6 +122,11 @@
                             Cancelado
                         </v-chip>
                     </template>
+                    <template v-slot:item.type="{ item }">
+                        <span class="text-caption">
+                            {{item.type === TYPES.PERSONAL ? 'PERSONAL': 'GRUPAL'}}
+                        </span>
+                    </template>
                 </v-data-table>
                 <!-- eslint-enable -->
                 <v-card-text v-else class="no-guests text-center d-flex">
@@ -133,6 +139,11 @@
                 </v-card-text>
             </v-card>
         </div>
+        <formInvitation 
+            :open="invitation_form.open"
+            :invitation="invitation_form.invitation"
+            @close="closeInvitationForm"
+        />
     </div>
 </template>
 
@@ -142,20 +153,29 @@ import information from '../components/guests/informationGuests.vue'
 import printPDF from '../components/guests/printPDF.vue'
 import generateCSV from '../plugins/generateCSV'
 import TYPES from '../plugins/invitations-types'
+import formInvitation from '../components/formGuest.vue'
 
 export default {
     name: 'Guests',
-    components: { information, printPDF },
+    components: { information, printPDF, formInvitation },
     computed: {
         ...mapState({
+            invitations: (state) => state.admin.list,
             guests: (state) => {
                 const guests = []
 
                 state.admin.list.forEach((invitation) => {
                     if (!invitation.guests) return
-                    invitation.guests.forEach((guest) => {
+                    invitation.guests.forEach((guest, index) => {
+                        let inv_name
+                        if(invitation.type === TYPES.PERSONAL){
+                            inv_name = index === 0 ? 'Personal' : `AC: ${invitation.name}`
+                        }else
+                            inv_name = invitation.name
+                        
                         guests.push({
-                            invitation: invitation.name,
+                            id_invitation: invitation.id,
+                            invitation: inv_name,
                             name: guest.name,
                             confirmed: guest.confirmed,
                             type: invitation.type
@@ -172,10 +192,22 @@ export default {
             headers: [
                 { text: 'Nombre', value: 'name' },
                 { text: 'Asistencia', value: 'confirmed', align: 'center' },
+                { text: 'Invitación', value: 'type', align: 'center' },
             ],
             search: [],
             list_guests: [],
-            TYPES: TYPES
+            TYPES: TYPES,
+            invitation_form: {
+                open: false,
+                invitation: {
+                    id: null,
+                    name: '',
+                    phone: '',
+                    guests: null,
+                    type: null,
+                    confirmed: false
+                }
+            }
         }
     },
     methods: {
@@ -192,7 +224,7 @@ export default {
         downloadCSVData() {
             let CSV = ''
 
-            const headers = 'Nombre ,Invitacion ,Asistencia \n'
+            const headers = 'Nombre ,Invitacion, Tipo ,Asistencia,  \n'
             CSV += headers
 
             this.list_guests.forEach((guest) => {
@@ -204,11 +236,33 @@ export default {
                         : guest.confirmed
                         ? 'Confirmada ,'
                         : 'Cancelada ,'
+                CSV += guest.type || 'GRUPAL'
                 CSV += '\n'
             })
             
             generateCSV(CSV, 'Invitados.csv')
-        }
+        },
+        openInvitationForm(invitation) {
+            if (!invitation || !invitation.id_invitation) return this.invitation_form.open = true
+            
+            const index = this.invitations.findIndex((g) => g.id === invitation.id_invitation)
+            this.invitation_form.invitation.id = invitation.id_invitation
+            this.invitation_form.invitation.name = this.invitations[index].name
+            this.invitation_form.invitation.guests = this.invitations[index].guests
+            this.invitation_form.invitation.phone = this.invitations[index].phone
+            this.invitation_form.invitation.type = this.invitations[index].type
+            this.invitation_form.invitation.confirmed = this.invitations[index].confirm === true
+            this.invitation_form.open = true
+        },
+        closeInvitationForm() {
+            this.invitation_form.invitation.id = null
+            this.invitation_form.invitation.name = ''
+            this.invitation_form.invitation.guests = null
+            this.invitation_form.invitation.phone = ''
+            this.invitation_form.invitation.type = null
+            this.invitation_form.invitation.confirmed = false
+            this.invitation_form.open = false
+        },
     },
     mounted() {
         this.setView('Guests')
